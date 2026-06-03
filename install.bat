@@ -20,6 +20,6 @@ echo 安装完成！
 echo.
 echo 使用方法：
 echo 1. 运行 start.bat 启动服务
-echo 2. 访问 http://localhost:3000
+echo 2. 访问 http://localhost:10087
 echo.
 pause

@@ -11,15 +11,9 @@ export function ContentLibrary() {
   const {
     contents,
     contentTypes,
-    categories,
     page,
-    size,
-    total,
     pages,
     contentTypeFilter,
-    categoryFilter,
-    difficultyFilter,
-    searchQuery,
     isLoading,
     fetchContents,
     fetchContentTypes,
@@ -67,7 +61,7 @@ export function ContentLibrary() {
             placeholder="搜索内容..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
           />
           <Button onClick={handleSearch}>
             <Search className="h-4 w-4" />

@@ -81,7 +81,7 @@ class ContentService:
             return None
         
         # 更新字段
-        update_data = content_data.dict(exclude_unset=True)
+        update_data = content_data.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(content, field, value)
         

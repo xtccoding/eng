@@ -9,6 +9,8 @@ import { ProgressDashboard } from './pages/ProgressDashboard'
 import { Settings } from './pages/Settings'
 import { Generation } from './pages/Generation'
 import { Leaderboard } from './pages/Leaderboard'
+import { Achievements } from './pages/Achievements'
+import { Pronunciation } from './pages/Pronunciation'
 import { NotFound } from './pages/NotFound'
 
 function App() {
@@ -25,7 +27,9 @@ function App() {
               <Route path="/content" element={<ContentLibrary />} />
               <Route path="/progress" element={<ProgressDashboard />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/achievements" element={<Achievements />} />
               <Route path="/generation" element={<Generation />} />
+              <Route path="/pronunciation" element={<Pronunciation />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

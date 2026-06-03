@@ -36,7 +36,7 @@ export function TypingArea({ content, isActive, onComplete, onReset }: TypingAre
   const inputRef = useRef<HTMLInputElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const particleIdRef = useRef(0)
-  const { submitResult, updateStats } = useTypingStore()
+  const { submitResult } = useTypingStore()
 
   // 播放音效
   const playSound = useCallback((correct: boolean) => {

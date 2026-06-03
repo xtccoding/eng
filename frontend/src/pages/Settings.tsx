@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useUIStore } from '@/stores/uiStore'
 import { useExportStore } from '@/stores/exportStore'
-import { Settings as SettingsIcon, Palette, Volume2, Database, Download, Upload } from 'lucide-react'
+import { Palette, Volume2, Database, Download, Upload } from 'lucide-react'
 
 export function Settings() {
   const { theme, setTheme } = useUIStore()

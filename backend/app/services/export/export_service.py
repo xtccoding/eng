@@ -3,6 +3,14 @@ import json
 import os
 from datetime import datetime
 
+
+class DateTimeEncoder(json.JSONEncoder):
+    """自定义JSON编码器，处理datetime对象"""
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
+
 from app.models.typing import TypingSession, TypingResult
 from app.models.content import Content, Article
 from app.models.progress import UserProgress, Achievement, WordProgress
@@ -38,7 +46,7 @@ class ExportService:
         
         # 写入文件
         with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+            json.dump(data, f, ensure_ascii=False, indent=2, cls=DateTimeEncoder)
         
         # 获取文件大小
         file_size = os.path.getsize(file_path)
