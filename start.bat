@@ -1,15 +1,15 @@
 @echo off
 chcp 65001 >nul
-title Xtcer Tool - 打字学习网站
+title Xtcer Eng - 英语打字学习
 
 echo ========================================
-echo   Xtcer Tool 打字学习网站 启动脚本
+echo   Xtcer Eng 英语打字学习 启动脚本
 echo ========================================
 echo.
 
 :: 设置窗口标题便于识别
-set BACKEND_TITLE=xtcer-backend-8000
-set FRONTEND_TITLE=xtcer-frontend-10087
+set BACKEND_TITLE=xtcer-eng-backend-8000
+set FRONTEND_TITLE=xtcer-eng-frontend-10087
 
 :: 先尝试关闭之前启动的本项目进程（通过窗口标题）
 echo [1/4] 清理旧进程...
@@ -46,7 +46,7 @@ echo ========================================
 (
 echo @echo off
 echo chcp 65001 ^>nul
-echo echo 正在停止 Xtcer Tool 服务...
+echo echo 正在停止 Xtcer Eng 服务...
 echo taskkill /FI "WINDOWTITLE eq %BACKEND_TITLE%" /F ^>nul 2^>^&1
 echo taskkill /FI "WINDOWTITLE eq %FRONTEND_TITLE%" /F ^>nul 2^>^&1
 echo echo 服务已停止

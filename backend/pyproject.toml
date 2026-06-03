@@ -1,7 +1,7 @@
 [project]
-name = "xtcer-tool-backend"
+name = "xtcer-eng-backend"
 version = "0.1.0"
-description = "Backend for xtcer-tool typing learning website"
+description = "Backend for xtcer-eng typing learning website"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
