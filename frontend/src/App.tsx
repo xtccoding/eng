@@ -3,14 +3,15 @@ import { Header } from './components/common/Header'
 import { Sidebar } from './components/common/Sidebar'
 import { Footer } from './components/common/Footer'
 import { Home } from './pages/Home'
+import { Skills } from './pages/Skills'
+import { Listening } from './pages/Listening'
+import { Speaking } from './pages/Speaking'
+import { Reading } from './pages/Reading'
+import { Writing } from './pages/Writing'
+import { Vocabulary } from './pages/Vocabulary'
 import { TypingPractice } from './pages/TypingPractice'
-import { ContentLibrary } from './pages/ContentLibrary'
 import { ProgressDashboard } from './pages/ProgressDashboard'
 import { Settings } from './pages/Settings'
-import { Generation } from './pages/Generation'
-import { Leaderboard } from './pages/Leaderboard'
-import { Achievements } from './pages/Achievements'
-import { Pronunciation } from './pages/Pronunciation'
 import { NotFound } from './pages/NotFound'
 
 function App() {
@@ -20,16 +21,17 @@ function App() {
         <Header />
         <div className="flex flex-1">
           <Sidebar />
-          <main className="flex-1 p-6">
+          <main className="flex-1">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/typing" element={<TypingPractice />} />
-              <Route path="/content" element={<ContentLibrary />} />
+              <Route path="/skills" element={<Skills />} />
+              <Route path="/listening" element={<Listening />} />
+              <Route path="/speaking" element={<Speaking />} />
+              <Route path="/reading" element={<Reading />} />
+              <Route path="/writing" element={<Writing />} />
+              <Route path="/vocabulary" element={<Vocabulary />} />
+              <Route path="/practice" element={<TypingPractice />} />
               <Route path="/progress" element={<ProgressDashboard />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/achievements" element={<Achievements />} />
-              <Route path="/generation" element={<Generation />} />
-              <Route path="/pronunciation" element={<Pronunciation />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

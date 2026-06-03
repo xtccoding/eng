@@ -1,186 +1,143 @@
 import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Keyboard, BookOpen, BarChart3, Trophy } from 'lucide-react'
+import { 
+  Headphones, 
+  Mic, 
+  BookOpen, 
+  PenTool, 
+  SpellCheck, 
+  GraduationCap,
+  Trophy,
+  Zap,
+  Clock,
+  Target
+} from 'lucide-react'
+
+const skillCards = [
+  {
+    title: '听力训练',
+    description: '通过听写练习提升听力理解能力',
+    icon: Headphones,
+    href: '/listening',
+    gradient: 'from-blue-500 to-cyan-500',
+    bg: 'bg-blue-50 dark:bg-blue-900/20',
+  },
+  {
+    title: '口语练习',
+    description: '跟读模仿，提升口语表达能力',
+    icon: Mic,
+    href: '/speaking',
+    gradient: 'from-purple-500 to-pink-500',
+    bg: 'bg-purple-50 dark:bg-purple-900/20',
+  },
+  {
+    title: '阅读理解',
+    description: '阅读英文文章，提升阅读速度和理解力',
+    icon: BookOpen,
+    href: '/reading',
+    gradient: 'from-green-500 to-emerald-500',
+    bg: 'bg-green-50 dark:bg-green-900/20',
+  },
+  {
+    title: '写作练习',
+    description: '通过打字练习提升英文写作能力',
+    icon: PenTool,
+    href: '/writing',
+    gradient: 'from-orange-500 to-red-500',
+    bg: 'bg-orange-50 dark:bg-orange-900/20',
+  },
+  {
+    title: '词汇学习',
+    description: '系统学习英语词汇，扩大词汇量',
+    icon: SpellCheck,
+    href: '/vocabulary',
+    gradient: 'from-pink-500 to-rose-500',
+    bg: 'bg-pink-50 dark:bg-pink-900/20',
+  },
+  {
+    title: '综合练习',
+    description: '全面提升英语技能的综合练习',
+    icon: GraduationCap,
+    href: '/skills',
+    gradient: 'from-indigo-500 to-violet-500',
+    bg: 'bg-indigo-50 dark:bg-indigo-900/20',
+  },
+]
+
+const quickStats = [
+  { label: '今日学习', value: '0分钟', icon: Clock, color: 'text-blue-500' },
+  { label: '连续天数', value: '0天', icon: Zap, color: 'text-orange-500' },
+  { label: '掌握词汇', value: '0个', icon: Target, color: 'text-green-500' },
+  { label: '完成练习', value: '0次', icon: Trophy, color: 'text-purple-500' },
+]
 
 export function Home() {
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">欢迎使用 Xtcer Tool</h2>
+    <div className="flex-1 p-6 max-w-5xl mx-auto w-full">
+      {/* 欢迎区域 */}
+      <div className="mb-8 animate-ios-fade-in">
+        <h1 className="ios-title mb-2">学习英语</h1>
+        <p className="ios-body text-muted-foreground">
+          通过打字练习，全面提升英语技能
+        </p>
       </div>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              打字练习
-            </CardTitle>
-            <Keyboard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">开始练习</div>
-            <p className="text-xs text-muted-foreground">
-              通过打字练习提高英语水平
-            </p>
-            <Link to="/typing">
-              <Button className="mt-4" size="sm">
-                开始
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              内容库
-            </CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">浏览内容</div>
-            <p className="text-xs text-muted-foreground">
-              演讲稿、单词表、雅思材料
-            </p>
-            <Link to="/content">
-              <Button className="mt-4" size="sm">
-                浏览
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              学习进度
-            </CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">查看进度</div>
-            <p className="text-xs text-muted-foreground">
-              跟踪您的学习进度
-            </p>
-            <Link to="/progress">
-              <Button className="mt-4" size="sm">
-                查看
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              成就系统
-            </CardTitle>
-            <Trophy className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">解锁成就</div>
-            <p className="text-xs text-muted-foreground">
-              完成挑战获得成就
-            </p>
-            <Link to="/achievements">
-              <Button className="mt-4" size="sm">
-                查看
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-      
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>快速开始</CardTitle>
-            <CardDescription>
-              选择一种练习方式开始学习
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <div className="ml-4 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    演讲稿练习
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    通过打字练习经典演讲稿
-                  </p>
+
+      {/* 快速统计 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {quickStats.map((stat, index) => {
+          const Icon = stat.icon
+          return (
+            <div key={index} className="ios-card animate-ios-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-xl bg-muted ${stat.color}`}>
+                  <Icon className="h-5 w-5" />
                 </div>
-                <div className="ml-auto font-medium">
-                  <Link to="/typing?type=speech">
-                    <Button variant="outline" size="sm">
-                      开始
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-              
-              <div className="flex items-center">
-                <div className="ml-4 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    单词练习
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    通过打字记忆单词
-                  </p>
-                </div>
-                <div className="ml-auto font-medium">
-                  <Link to="/typing?type=vocabulary">
-                    <Button variant="outline" size="sm">
-                      开始
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-              
-              <div className="flex items-center">
-                <div className="ml-4 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    雅思练习
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    雅思阅读和写作练习
-                  </p>
-                </div>
-                <div className="ml-auto font-medium">
-                  <Link to="/typing?type=ielts">
-                    <Button variant="outline" size="sm">
-                      开始
-                    </Button>
-                  </Link>
+                <div>
+                  <div className="ios-body font-semibold">{stat.value}</div>
+                  <div className="ios-caption">{stat.label}</div>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>最近学习</CardTitle>
-            <CardDescription>
-              您最近的学习记录
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <div className="ml-4 space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    暂无学习记录
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    开始您的第一次练习吧！
-                  </p>
+          )
+        })}
+      </div>
+
+      {/* 技能卡片 */}
+      <div className="mb-6">
+        <h2 className="ios-subtitle mb-4">选择学习内容</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {skillCards.map((card, index) => {
+            const Icon = card.icon
+            return (
+              <Link
+                key={index}
+                to={card.href}
+                className="ios-card group hover:scale-[1.02] transition-all duration-200 animate-ios-fade-in"
+                style={{ animationDelay: `${(index + 4) * 50}ms` }}
+              >
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${card.gradient} flex items-center justify-center mb-4`}>
+                  <Icon className="h-6 w-6 text-white" />
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                <h3 className="ios-body font-semibold mb-1">{card.title}</h3>
+                <p className="ios-caption text-muted-foreground">{card.description}</p>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* 快速开始 */}
+      <div className="ios-card bg-gradient-to-r from-blue-500/10 to-purple-500/10 animate-ios-fade-in" style={{ animationDelay: '500ms' }}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="ios-subtitle mb-1">快速开始</h3>
+            <p className="ios-caption text-muted-foreground">选择一个技能开始学习</p>
+          </div>
+          <Link to="/skills">
+            <button className="ios-button">
+              开始学习
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   )
