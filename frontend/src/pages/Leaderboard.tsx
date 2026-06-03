@@ -31,9 +31,9 @@ export function Leaderboard() {
   const fetchLeaderboard = async () => {
     setIsLoading(true)
     try {
-      const res = await progressAPI.getLeaderboard(sortBy, 20)
-      setRankings(res.rankings || [])
-      setTotal(res.total || 0)
+      const res: any = await progressAPI.getLeaderboard(sortBy, 20)
+      setRankings(res?.rankings || [])
+      setTotal(res?.total || 0)
     } catch (e) {
       console.error(e)
     } finally {

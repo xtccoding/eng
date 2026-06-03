@@ -22,11 +22,11 @@ export function Generation() {
     if (!searchQuery.trim()) return
     setIsSearching(true)
     try {
-      const res = await generationAPI.searchArticles({
+      const res: any = await generationAPI.searchArticles({
         query: searchQuery,
         max_results: 5,
       })
-      setSearchResults(res.results || [])
+      setSearchResults(res?.results || [])
     } catch (e) {
       console.error(e)
     } finally {
