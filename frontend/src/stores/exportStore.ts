@@ -2,14 +2,9 @@ import { create } from 'zustand'
 import { exportAPI } from '@/services/api'
 
 interface ExportState {
-  // 导出记录
   exportRecords: any[]
-  
-  // 加载状态
   isLoading: boolean
   error: string | null
-  
-  // Actions
   exportData: (data: {
     export_type: string
     include_presets?: boolean
@@ -22,19 +17,17 @@ interface ExportState {
 }
 
 export const useExportStore = create<ExportState>((set, get) => ({
-  // 初始状态
   exportRecords: [],
   isLoading: false,
   error: null,
   
-  // 导出数据
   exportData: async (data) => {
     set({ isLoading: true, error: null })
     try {
-      const response = await exportAPI.exportData(data)
-      // 自动下载文件
-      await get().downloadExport(response.file_name)
-      // 刷新记录
+      const response: any = await exportAPI.exportData(data)
+      if (response?.file_name) {
+        await get().downloadExport(response.file_name)
+      }
       get().fetchExportRecords()
       set({ isLoading: false })
     } catch (error: any) {
@@ -42,7 +35,6 @@ export const useExportStore = create<ExportState>((set, get) => ({
     }
   },
   
-  // 导入数据
   importData: async (file) => {
     set({ isLoading: true, error: null })
     try {
@@ -53,11 +45,9 @@ export const useExportStore = create<ExportState>((set, get) => ({
     }
   },
   
-  // 下载导出文件
   downloadExport: async (fileName) => {
     try {
-      const response = await exportAPI.downloadExport(fileName)
-      // 创建下载链接
+      const response: any = await exportAPI.downloadExport(fileName)
       const url = window.URL.createObjectURL(new Blob([response]))
       const link = document.createElement('a')
       link.href = url
@@ -71,18 +61,16 @@ export const useExportStore = create<ExportState>((set, get) => ({
     }
   },
   
-  // 获取导出记录
   fetchExportRecords: async () => {
     set({ isLoading: true, error: null })
     try {
-      const response = await exportAPI.getExportRecords()
-      set({ exportRecords: response, isLoading: false })
+      const response: any = await exportAPI.getExportRecords()
+      set({ exportRecords: Array.isArray(response) ? response : [], isLoading: false })
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
   
-  // 创建备份
   createBackup: async () => {
     set({ isLoading: true, error: null })
     try {

@@ -2,33 +2,22 @@ import { create } from 'zustand'
 import { progressAPI } from '@/services/api'
 
 interface ProgressState {
-  // 仪表板数据
   dashboard: any | null
-  
-  // 历史记录
   history: any[]
   historyTotal: number
   historyPage: number
   historySize: number
   historyPages: number
-  
-  // 成就
   achievements: any[]
   achievementsTotal: number
   unlockedCount: number
-  
-  // 单词进度
   wordProgress: any[]
   wordProgressTotal: number
   wordProgressPage: number
   wordProgressSize: number
   wordProgressPages: number
-  
-  // 加载状态
   isLoading: boolean
   error: string | null
-  
-  // Actions
   fetchDashboard: () => Promise<void>
   fetchHistory: (params?: {
     page?: number
@@ -49,7 +38,6 @@ interface ProgressState {
 }
 
 export const useProgressStore = create<ProgressState>((set, get) => ({
-  // 初始状态
   dashboard: null,
   history: [],
   historyTotal: 0,
@@ -67,18 +55,16 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
   isLoading: false,
   error: null,
   
-  // 获取仪表板数据
   fetchDashboard: async () => {
     set({ isLoading: true, error: null })
     try {
-      const response = await progressAPI.getDashboard()
+      const response: any = await progressAPI.getDashboard()
       set({ dashboard: response, isLoading: false })
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
   
-  // 获取历史记录
   fetchHistory: async (params) => {
     set({ isLoading: true, error: null })
     try {
@@ -89,13 +75,13 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         content_type: params?.content_type,
       }
       
-      const response = await progressAPI.getHistory(queryParams)
+      const response: any = await progressAPI.getHistory(queryParams)
       set({
-        history: response.sessions,
-        historyTotal: response.total,
-        historyPage: response.page,
-        historySize: response.size,
-        historyPages: response.pages,
+        history: response?.sessions || [],
+        historyTotal: response?.total || 0,
+        historyPage: response?.page || 1,
+        historySize: response?.size || 20,
+        historyPages: response?.pages || 0,
         isLoading: false,
       })
     } catch (error: any) {
@@ -103,15 +89,14 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     }
   },
   
-  // 获取成就列表
   fetchAchievements: async (params) => {
     set({ isLoading: true, error: null })
     try {
-      const response = await progressAPI.getAchievements(params)
+      const response: any = await progressAPI.getAchievements(params)
       set({
-        achievements: response.achievements,
-        achievementsTotal: response.total,
-        unlockedCount: response.unlocked_count,
+        achievements: response?.achievements || [],
+        achievementsTotal: response?.total || 0,
+        unlockedCount: response?.unlocked_count || 0,
         isLoading: false,
       })
     } catch (error: any) {
@@ -119,19 +104,16 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     }
   },
   
-  // 解锁成就
   unlockAchievement: async (achievementId) => {
     set({ isLoading: true, error: null })
     try {
       await progressAPI.unlockAchievement(achievementId)
-      // 刷新成就列表
       get().fetchAchievements()
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
   
-  // 获取单词进度
   fetchWordProgress: async (params) => {
     set({ isLoading: true, error: null })
     try {
@@ -142,13 +124,13 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
         mastery_level: params?.mastery_level,
       }
       
-      const response = await progressAPI.getWordProgress(queryParams)
+      const response: any = await progressAPI.getWordProgress(queryParams)
       set({
-        wordProgress: response.words,
-        wordProgressTotal: response.total,
-        wordProgressPage: response.page,
-        wordProgressSize: response.size,
-        wordProgressPages: response.pages,
+        wordProgress: response?.words || [],
+        wordProgressTotal: response?.total || 0,
+        wordProgressPage: response?.page || 1,
+        wordProgressSize: response?.size || 20,
+        wordProgressPages: response?.pages || 0,
         isLoading: false,
       })
     } catch (error: any) {
@@ -156,11 +138,9 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     }
   },
   
-  // 更新单词进度
   updateWordProgress: async (wordId, isCorrect) => {
     try {
       await progressAPI.updateWordProgress(wordId, isCorrect)
-      // 刷新单词进度
       get().fetchWordProgress()
     } catch (error: any) {
       set({ error: error.message })

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
@@ -22,7 +22,7 @@ api.interceptors.request.use(
 
 // 响应拦截器
 api.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse) => {
     return response.data
   },
   (error) => {
@@ -36,7 +36,7 @@ export default api
 
 // 打字练习相关API
 export const typingAPI = {
-  startSession: (data: { content_id: number; content_type: string }) =>
+  startSession: (data: { content_id: number; content_type: string }): Promise<any> =>
     api.post('/typing/start', data),
   
   submitResult: (data: {
@@ -46,18 +46,18 @@ export const typingAPI = {
     typed_char: string
     is_correct: boolean
     time_taken: number
-  }) => api.post('/typing/submit', data),
+  }): Promise<any> => api.post('/typing/submit', data),
   
-  completeSession: (sessionId: number) =>
+  completeSession: (sessionId: number): Promise<any> =>
     api.post(`/typing/complete/${sessionId}`),
   
-  getSessions: (params?: { page?: number; size?: number; content_type?: string }) =>
+  getSessions: (params?: { page?: number; size?: number; content_type?: string }): Promise<any> =>
     api.get('/typing/sessions', { params }),
   
-  getSession: (sessionId: number) =>
+  getSession: (sessionId: number): Promise<any> =>
     api.get(`/typing/sessions/${sessionId}`),
   
-  getStatistics: () =>
+  getStatistics: (): Promise<any> =>
     api.get('/typing/statistics'),
 }
 
@@ -69,9 +69,9 @@ export const contentAPI = {
     content_type?: string
     category?: string
     difficulty?: string
-  }) => api.get('/content/', { params }),
+  }): Promise<any> => api.get('/content/', { params }),
   
-  getContent: (contentId: number) =>
+  getContent: (contentId: number): Promise<any> =>
     api.get(`/content/${contentId}`),
   
   createContent: (data: {
@@ -84,7 +84,7 @@ export const contentAPI = {
     audio_url?: string
     tags?: string[]
     source?: string
-  }) => api.post('/content/', data),
+  }): Promise<any> => api.post('/content/', data),
   
   updateContent: (contentId: number, data: Partial<{
     title: string
@@ -96,15 +96,15 @@ export const contentAPI = {
     audio_url?: string
     tags?: string[]
     source?: string
-  }>) => api.put(`/content/${contentId}`, data),
+  }>): Promise<any> => api.put(`/content/${contentId}`, data),
   
-  deleteContent: (contentId: number) =>
+  deleteContent: (contentId: number): Promise<any> =>
     api.delete(`/content/${contentId}`),
   
-  getContentTypes: () =>
+  getContentTypes: (): Promise<any> =>
     api.get('/content/types/'),
   
-  getCategories: () =>
+  getCategories: (): Promise<any> =>
     api.get('/content/categories/'),
   
   searchContents: (data: {
@@ -114,38 +114,38 @@ export const contentAPI = {
     difficulty?: string
     page?: number
     size?: number
-  }) => api.post('/content/search', data),
+  }): Promise<any> => api.post('/content/search', data),
 }
 
 // 进度跟踪相关API
 export const progressAPI = {
-  getDashboard: () =>
+  getDashboard: (): Promise<any> =>
     api.get('/progress/dashboard'),
   
   getHistory: (params?: {
     page?: number
     size?: number
     content_type?: string
-  }) => api.get('/progress/history', { params }),
+  }): Promise<any> => api.get('/progress/history', { params }),
   
   getAchievements: (params?: {
     category?: string
     is_unlocked?: boolean
-  }) => api.get('/progress/achievements', { params }),
+  }): Promise<any> => api.get('/progress/achievements', { params }),
   
-  unlockAchievement: (achievementId: number) =>
+  unlockAchievement: (achievementId: number): Promise<any> =>
     api.post(`/progress/achievements/${achievementId}/unlock`),
   
   getWordProgress: (params?: {
     page?: number
     size?: number
     mastery_level?: number
-  }) => api.get('/progress/words', { params }),
+  }): Promise<any> => api.get('/progress/words', { params }),
   
-  updateWordProgress: (wordId: number, isCorrect: boolean) =>
+  updateWordProgress: (wordId: number, isCorrect: boolean): Promise<any> =>
     api.post(`/progress/words/${wordId}/update`, { is_correct: isCorrect }),
   
-  getLeaderboard: (sortBy: string = 'wpm', limit: number = 10) =>
+  getLeaderboard: (sortBy: string = 'wpm', limit: number = 10): Promise<any> =>
     api.get('/progress/leaderboard', { params: { sort_by: sortBy, limit } }),
 }
 
@@ -157,7 +157,7 @@ export const generationAPI = {
     difficulty?: string
     max_results?: number
     language?: string
-  }) => api.post('/generation/search', data),
+  }): Promise<any> => api.post('/generation/search', data),
   
   generateContent: (data: {
     topic: string
@@ -166,14 +166,14 @@ export const generationAPI = {
     length?: number
     language?: string
     include_translation?: boolean
-  }) => api.post('/generation/generate', data),
+  }): Promise<any> => api.post('/generation/generate', data),
   
   getSuggestions: (params?: {
     content_type?: string
     difficulty?: string
-  }) => api.get('/generation/suggestions', { params }),
+  }): Promise<any> => api.get('/generation/suggestions', { params }),
   
-  fetchArticle: (url: string) =>
+  fetchArticle: (url: string): Promise<any> =>
     api.post('/generation/fetch', null, { params: { url } }),
 }
 
@@ -183,9 +183,9 @@ export const exportAPI = {
     export_type: string
     include_presets?: boolean
     format?: string
-  }) => api.post('/export/export', data),
+  }): Promise<any> => api.post('/export/export', data),
   
-  importData: (file: File) => {
+  importData: (file: File): Promise<any> => {
     const formData = new FormData()
     formData.append('file', file)
     return api.post('/export/import', formData, {
@@ -195,12 +195,12 @@ export const exportAPI = {
     })
   },
   
-  downloadExport: (fileName: string) =>
+  downloadExport: (fileName: string): Promise<any> =>
     api.get(`/export/download/${fileName}`, { responseType: 'blob' }),
   
-  getExportRecords: () =>
+  getExportRecords: (): Promise<any> =>
     api.get('/export/records'),
   
-  createBackup: () =>
+  createBackup: (): Promise<any> =>
     api.post('/export/backup'),
 }

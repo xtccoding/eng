@@ -2,29 +2,20 @@ import { create } from 'zustand'
 import { contentAPI } from '@/services/api'
 
 interface ContentState {
-  // 内容列表
   contents: any[]
   currentContent: any | null
   contentTypes: string[]
   categories: string[]
-  
-  // 分页和过滤
   page: number
   size: number
   total: number
   pages: number
-  
-  // 搜索和过滤条件
-  contentTypeFilter: string | null
-  categoryFilter: string | null
-  difficultyFilter: string | null
+  contentTypeFilter: string | undefined
+  categoryFilter: string | undefined
+  difficultyFilter: string | undefined
   searchQuery: string
-  
-  // 加载状态
   isLoading: boolean
   error: string | null
-  
-  // Actions
   fetchContents: (params?: {
     page?: number
     size?: number
@@ -49,7 +40,6 @@ interface ContentState {
 }
 
 export const useContentStore = create<ContentState>((set, get) => ({
-  // 初始状态
   contents: [],
   currentContent: null,
   contentTypes: [],
@@ -58,14 +48,13 @@ export const useContentStore = create<ContentState>((set, get) => ({
   size: 20,
   total: 0,
   pages: 0,
-  contentTypeFilter: null,
-  categoryFilter: null,
-  difficultyFilter: null,
+  contentTypeFilter: undefined,
+  categoryFilter: undefined,
+  difficultyFilter: undefined,
   searchQuery: '',
   isLoading: false,
   error: null,
   
-  // 获取内容列表
   fetchContents: async (params) => {
     set({ isLoading: true, error: null })
     try {
@@ -78,13 +67,13 @@ export const useContentStore = create<ContentState>((set, get) => ({
         difficulty: params?.difficulty || difficultyFilter,
       }
       
-      const response = await contentAPI.getContents(queryParams)
+      const response: any = await contentAPI.getContents(queryParams)
       set({
-        contents: response.contents,
-        total: response.total,
-        page: response.page,
-        size: response.size,
-        pages: response.pages,
+        contents: response.contents || [],
+        total: response.total || 0,
+        page: response.page || 1,
+        size: response.size || 20,
+        pages: response.pages || 0,
         isLoading: false,
       })
     } catch (error: any) {
@@ -92,79 +81,69 @@ export const useContentStore = create<ContentState>((set, get) => ({
     }
   },
   
-  // 获取单个内容
   fetchContent: async (contentId) => {
     set({ isLoading: true, error: null })
     try {
-      const response = await contentAPI.getContent(contentId)
+      const response: any = await contentAPI.getContent(contentId)
       set({ currentContent: response, isLoading: false })
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
   
-  // 创建内容
   createContent: async (data) => {
     set({ isLoading: true, error: null })
     try {
       await contentAPI.createContent(data)
-      // 刷新列表
       get().fetchContents()
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
   
-  // 更新内容
   updateContent: async (contentId, data) => {
     set({ isLoading: true, error: null })
     try {
       await contentAPI.updateContent(contentId, data)
-      // 刷新列表
       get().fetchContents()
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
   
-  // 删除内容
   deleteContent: async (contentId) => {
     set({ isLoading: true, error: null })
     try {
       await contentAPI.deleteContent(contentId)
-      // 刷新列表
       get().fetchContents()
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
   
-  // 获取内容类型
   fetchContentTypes: async () => {
     try {
-      const response = await contentAPI.getContentTypes()
-      set({ contentTypes: response })
+      const response: any = await contentAPI.getContentTypes()
+      set({ contentTypes: Array.isArray(response) ? response : [] })
     } catch (error: any) {
       set({ error: error.message })
     }
   },
   
-  // 获取分类
   fetchCategories: async () => {
     try {
-      const response = await contentAPI.getCategories()
-      set({ categories: response })
+      const response: any = await contentAPI.getCategories()
+      set({ categories: Array.isArray(response) ? response : [] })
     } catch (error: any) {
       set({ error: error.message })
     }
   },
   
-  // 搜索内容
   searchContents: async (query) => {
     set({ isLoading: true, error: null, searchQuery: query })
     try {
       const { contentTypeFilter, categoryFilter, difficultyFilter, page, size } = get()
-      const response = await contentAPI.searchContents({
+      const response: any = await contentAPI.searchContents({
         query,
         content_type: contentTypeFilter,
         category: categoryFilter,
@@ -173,11 +152,11 @@ export const useContentStore = create<ContentState>((set, get) => ({
         size,
       })
       set({
-        contents: response.contents,
-        total: response.total,
-        page: response.page,
-        size: response.size,
-        pages: response.pages,
+        contents: response.contents || [],
+        total: response.total || 0,
+        page: response.page || 1,
+        size: response.size || 20,
+        pages: response.pages || 0,
         isLoading: false,
       })
     } catch (error: any) {
@@ -185,29 +164,25 @@ export const useContentStore = create<ContentState>((set, get) => ({
     }
   },
   
-  // 设置过滤条件
   setFilters: (filters) => {
     set({
-      contentTypeFilter: filters.contentType !== undefined ? filters.contentType : get().contentTypeFilter,
-      categoryFilter: filters.category !== undefined ? filters.category : get().categoryFilter,
-      difficultyFilter: filters.difficulty !== undefined ? filters.difficulty : get().difficultyFilter,
+      contentTypeFilter: filters.contentType !== undefined ? (filters.contentType || undefined) : get().contentTypeFilter,
+      categoryFilter: filters.category !== undefined ? (filters.category || undefined) : get().categoryFilter,
+      difficultyFilter: filters.difficulty !== undefined ? (filters.difficulty || undefined) : get().difficultyFilter,
     })
-    // 重新获取数据
     get().fetchContents()
   },
   
-  // 设置页码
   setPage: (page) => {
     set({ page })
     get().fetchContents()
   },
   
-  // 重置过滤条件
   resetFilters: () => {
     set({
-      contentTypeFilter: null,
-      categoryFilter: null,
-      difficultyFilter: null,
+      contentTypeFilter: undefined,
+      categoryFilter: undefined,
+      difficultyFilter: undefined,
       searchQuery: '',
       page: 1,
     })
