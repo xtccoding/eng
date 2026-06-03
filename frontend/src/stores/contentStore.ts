@@ -1,9 +1,9 @@
 import { create } from 'zustand'
-import { contentAPI } from '@/services/api'
+import { supabase, type Content } from '@/lib/supabase'
 
 interface ContentState {
-  contents: any[]
-  currentContent: any | null
+  contents: Content[]
+  currentContent: Content | null
   contentTypes: string[]
   categories: string[]
   page: number
@@ -23,10 +23,10 @@ interface ContentState {
     category?: string
     difficulty?: string
   }) => Promise<void>
-  fetchContent: (contentId: number) => Promise<void>
-  createContent: (data: any) => Promise<void>
-  updateContent: (contentId: number, data: any) => Promise<void>
-  deleteContent: (contentId: number) => Promise<void>
+  fetchContent: (contentId: string) => Promise<void>
+  createContent: (data: Partial<Content>) => Promise<void>
+  updateContent: (contentId: string, data: Partial<Content>) => Promise<void>
+  deleteContent: (contentId: string) => Promise<void>
   fetchContentTypes: () => Promise<void>
   fetchCategories: () => Promise<void>
   searchContents: (query: string) => Promise<void>
@@ -54,116 +54,166 @@ export const useContentStore = create<ContentState>((set, get) => ({
   searchQuery: '',
   isLoading: false,
   error: null,
-  
+
   fetchContents: async (params) => {
     set({ isLoading: true, error: null })
     try {
       const { page, size, contentTypeFilter, categoryFilter, difficultyFilter } = get()
-      const queryParams = {
-        page: params?.page || page,
-        size: params?.size || size,
-        content_type: params?.content_type || contentTypeFilter,
-        category: params?.category || categoryFilter,
-        difficulty: params?.difficulty || difficultyFilter,
-      }
-      
-      const response: any = await contentAPI.getContents(queryParams)
+      const currentPage = params?.page || page
+      const pageSize = params?.size || size
+      const offset = (currentPage - 1) * pageSize
+
+      let query = supabase
+        .from('contents')
+        .select('*', { count: 'exact' })
+
+      const type = params?.content_type || contentTypeFilter
+      if (type) query = query.eq('content_type', type)
+
+      const cat = params?.category || categoryFilter
+      if (cat) query = query.eq('category', cat)
+
+      const diff = params?.difficulty || difficultyFilter
+      if (diff) query = query.eq('difficulty', diff)
+
+      query = query
+        .order('created_at', { ascending: false })
+        .range(offset, offset + pageSize - 1)
+
+      const { data, error, count } = await query
+
+      if (error) throw error
+
       set({
-        contents: response.contents || [],
-        total: response.total || 0,
-        page: response.page || 1,
-        size: response.size || 20,
-        pages: response.pages || 0,
+        contents: data || [],
+        total: count || 0,
+        page: currentPage,
+        size: pageSize,
+        pages: Math.ceil((count || 0) / pageSize),
         isLoading: false,
       })
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
-  
+
   fetchContent: async (contentId) => {
     set({ isLoading: true, error: null })
     try {
-      const response: any = await contentAPI.getContent(contentId)
-      set({ currentContent: response, isLoading: false })
+      const { data, error } = await supabase
+        .from('contents')
+        .select('*')
+        .eq('id', contentId)
+        .single()
+
+      if (error) throw error
+      set({ currentContent: data, isLoading: false })
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
-  
+
   createContent: async (data) => {
     set({ isLoading: true, error: null })
     try {
-      await contentAPI.createContent(data)
+      const { error } = await supabase.from('contents').insert(data)
+      if (error) throw error
       get().fetchContents()
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
-  
+
   updateContent: async (contentId, data) => {
     set({ isLoading: true, error: null })
     try {
-      await contentAPI.updateContent(contentId, data)
+      const { error } = await supabase
+        .from('contents')
+        .update(data)
+        .eq('id', contentId)
+
+      if (error) throw error
       get().fetchContents()
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
-  
+
   deleteContent: async (contentId) => {
     set({ isLoading: true, error: null })
     try {
-      await contentAPI.deleteContent(contentId)
+      const { error } = await supabase
+        .from('contents')
+        .delete()
+        .eq('id', contentId)
+
+      if (error) throw error
       get().fetchContents()
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
-  
+
   fetchContentTypes: async () => {
     try {
-      const response: any = await contentAPI.getContentTypes()
-      set({ contentTypes: Array.isArray(response) ? response : [] })
+      const { data, error } = await supabase
+        .from('contents')
+        .select('content_type')
+
+      if (error) throw error
+      const types = [...new Set((data || []).map((r: any) => r.content_type))]
+      set({ contentTypes: types })
     } catch (error: any) {
       set({ error: error.message })
     }
   },
-  
+
   fetchCategories: async () => {
     try {
-      const response: any = await contentAPI.getCategories()
-      set({ categories: Array.isArray(response) ? response : [] })
+      const { data, error } = await supabase
+        .from('contents')
+        .select('category')
+
+      if (error) throw error
+      const cats = [...new Set((data || []).map((r: any) => r.category))]
+      set({ categories: cats })
     } catch (error: any) {
       set({ error: error.message })
     }
   },
-  
+
   searchContents: async (query) => {
     set({ isLoading: true, error: null, searchQuery: query })
     try {
       const { contentTypeFilter, categoryFilter, difficultyFilter, page, size } = get()
-      const response: any = await contentAPI.searchContents({
-        query,
-        content_type: contentTypeFilter,
-        category: categoryFilter,
-        difficulty: difficultyFilter,
-        page,
-        size,
-      })
+      const offset = (page - 1) * size
+
+      let q = supabase
+        .from('contents')
+        .select('*', { count: 'exact' })
+        .or(`title.ilike.%${query}%,content_text.ilike.%${query}%`)
+
+      if (contentTypeFilter) q = q.eq('content_type', contentTypeFilter)
+      if (categoryFilter) q = q.eq('category', categoryFilter)
+      if (difficultyFilter) q = q.eq('difficulty', difficultyFilter)
+
+      q = q.order('created_at', { ascending: false }).range(offset, offset + size - 1)
+
+      const { data, error, count } = await q
+
+      if (error) throw error
+
       set({
-        contents: response.contents || [],
-        total: response.total || 0,
-        page: response.page || 1,
-        size: response.size || 20,
-        pages: response.pages || 0,
+        contents: data || [],
+        total: count || 0,
+        pages: Math.ceil((count || 0) / size),
         isLoading: false,
       })
     } catch (error: any) {
       set({ error: error.message, isLoading: false })
     }
   },
-  
+
   setFilters: (filters) => {
     set({
       contentTypeFilter: filters.contentType !== undefined ? (filters.contentType || undefined) : get().contentTypeFilter,
@@ -172,12 +222,12 @@ export const useContentStore = create<ContentState>((set, get) => ({
     })
     get().fetchContents()
   },
-  
+
   setPage: (page) => {
     set({ page })
     get().fetchContents()
   },
-  
+
   resetFilters: () => {
     set({
       contentTypeFilter: undefined,

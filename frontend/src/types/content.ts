@@ -3,7 +3,7 @@ export type DifficultyLevel = 'easy' | 'medium' | 'hard'
 export type ContentType = 'listening' | 'speaking' | 'reading' | 'writing' | 'vocabulary' | 'speech' | 'ielts' | 'article'
 
 export interface ContentItem {
-  id: number
+  id: string
   title: string
   content_text: string
   content_type: string

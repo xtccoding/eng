@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useContentStore } from '@/stores/contentStore'
-import type { ContentItem } from '@/types/content'
+import type { Content } from '@/lib/supabase'
 
 interface UseSkillPracticeOptions {
   contentType: string
@@ -8,13 +8,13 @@ interface UseSkillPracticeOptions {
 
 export function useSkillPractice({ contentType }: UseSkillPracticeOptions) {
   const { contents, fetchContents } = useContentStore()
-  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null)
+  const [selectedContent, setSelectedContent] = useState<Content | null>(null)
 
   useEffect(() => {
     fetchContents({ content_type: contentType })
   }, [contentType, fetchContents])
 
-  const handleSelectContent = (content: ContentItem) => {
+  const handleSelectContent = (content: Content) => {
     setSelectedContent(content)
   }
 
