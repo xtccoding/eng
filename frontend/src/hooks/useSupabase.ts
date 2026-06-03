@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase, TypingSession, TypingResult, Content, Achievement, UserAchievement, WordProgress } from '@/lib/supabase'
+import { supabase, TypingSession, TypingResult, Content, Achievement, UserAchievement, WordProgress } from '../lib/supabase'
 import { useAuth } from './useAuth'
 
 // 打字练习钩子
