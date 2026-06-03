@@ -1,17 +1,19 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { useTypingStore } from '@/stores/typingStore'
+import { useTyping } from '@/hooks/useSupabase'
 import { cn } from '@/utils/helpers'
 
 interface TypingAreaProps {
   content: string
+  contentId?: string
+  contentType?: string
   isActive: boolean
   onComplete: () => void
   onReset: () => void
 }
 
-export function TypingArea({ content, isActive, onComplete, onReset }: TypingAreaProps) {
+export function TypingArea({ content, contentId, contentType, isActive, onComplete, onReset }: TypingAreaProps) {
   const [currentPosition, setCurrentPosition] = useState(0)
   const [typedChars, setTypedChars] = useState<string[]>([])
   const [errors, setErrors] = useState<number[]>([])
@@ -21,11 +23,23 @@ export function TypingArea({ content, isActive, onComplete, onReset }: TypingAre
   const [maxCombo, setMaxCombo] = useState(0)
   const [currentWPM, setCurrentWPM] = useState(0)
   const [currentAccuracy, setCurrentAccuracy] = useState(100)
+  const [sessionId, setSessionId] = useState<string | null>(null)
   
   const inputRef = useRef<HTMLInputElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const wpmIntervalRef = useRef<number | null>(null)
-  const { submitResult } = useTypingStore()
+  const { createSession, submitResult, completeSession } = useTyping()
+
+  // 创建练习会话
+  useEffect(() => {
+    if (isActive && contentId && contentType) {
+      createSession(contentId, contentType).then(session => {
+        if (session) {
+          setSessionId(session.id)
+        }
+      })
+    }
+  }, [isActive, contentId, contentType])
 
   // 重置状态
   const reset = useCallback(() => {
@@ -38,6 +52,7 @@ export function TypingArea({ content, isActive, onComplete, onReset }: TypingAre
     setMaxCombo(0)
     setCurrentWPM(0)
     setCurrentAccuracy(100)
+    setSessionId(null)
     if (wpmIntervalRef.current) {
       clearInterval(wpmIntervalRef.current)
       wpmIntervalRef.current = null
@@ -105,16 +120,16 @@ export function TypingArea({ content, isActive, onComplete, onReset }: TypingAre
     const expectedChar = content[currentPosition]
     const isCorrect = key === expectedChar
     
-    // 记录结果
-    const result = {
-      char_index: currentPosition,
-      expected_char: expectedChar,
-      typed_char: key,
-      is_correct: isCorrect,
-      time_taken: startTime ? Date.now() - startTime : 0,
+    // 记录结果到 Supabase
+    if (sessionId) {
+      submitResult(sessionId, {
+        char_index: currentPosition,
+        expected_char: expectedChar,
+        typed_char: key,
+        is_correct: isCorrect,
+        time_taken: startTime ? Date.now() - startTime : 0,
+      })
     }
-    
-    submitResult(result)
     
     // 更新连击
     if (isCorrect) {
@@ -146,9 +161,23 @@ export function TypingArea({ content, isActive, onComplete, onReset }: TypingAre
       if (wpmIntervalRef.current) {
         clearInterval(wpmIntervalRef.current)
       }
+      
+      // 完成会话
+      if (sessionId && startTime) {
+        const duration = (Date.now() - startTime) / 1000
+        completeSession(sessionId, {
+          duration,
+          total_chars: newPosition,
+          correct_chars: newPosition - newErrors.length,
+          wpm: currentWPM,
+          accuracy: newAccuracy,
+          max_combo: maxCombo,
+        })
+      }
+      
       onComplete()
     }
-  }, [isCompleted, startTime, currentPosition, typedChars, errors, content, submitResult, onComplete, combo])
+  }, [isCompleted, startTime, currentPosition, typedChars, errors, content, sessionId, submitResult, completeSession, onComplete, combo, maxCombo, currentWPM])
   
   // 计算进度
   const progress = content.length > 0 ? (currentPosition / content.length) * 100 : 0
@@ -225,11 +254,12 @@ export function TypingArea({ content, isActive, onComplete, onReset }: TypingAre
       <div
         ref={contentRef}
         className={cn(
-          "relative p-6 min-h-[200px] font-mono text-lg leading-relaxed cursor-text overflow-hidden",
+          "relative p-6 min-h-[200px] font-mono text-lg leading-relaxed cursor-text",
           "bg-gray-50 dark:bg-gray-900/50 rounded-2xl",
           "whitespace-pre-wrap break-words",
           combo > 5 && "ios-shake"
         )}
+        style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         onClick={() => inputRef.current?.focus()}
       >
         {renderContent()}

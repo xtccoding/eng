@@ -1,7 +1,11 @@
 import { Link } from 'react-router-dom'
 import { ModeToggle } from '@/components/ui/mode-toggle'
+import { useAuth } from '@/hooks/useAuth'
+import { LogOut, User } from 'lucide-react'
 
 export function Header() {
+  const { user, profile, signOut } = useAuth()
+
   return (
     <header className="ios-nav sticky top-0 z-50">
       <div className="container flex h-14 items-center">
@@ -30,8 +34,25 @@ export function Header() {
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="w-full flex-1 md:w-auto md:flex-none">
           </div>
-          <nav className="flex items-center">
+          <nav className="flex items-center gap-2">
             <ModeToggle />
+            {user && (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">
+                    {profile?.display_name || user.email?.split('@')[0]}
+                  </span>
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  className="p-2 rounded-full hover:bg-muted transition-colors"
+                  title="退出登录"
+                >
+                  <LogOut className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </div>
+            )}
           </nav>
         </div>
       </div>

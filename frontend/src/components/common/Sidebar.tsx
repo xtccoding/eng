@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/utils/helpers'
+import { useAuth } from '@/hooks/useAuth'
 import { 
   Home, 
   BookOpen, 
@@ -62,24 +63,51 @@ const sidebarItems = [
 
 export function Sidebar() {
   const location = useLocation()
+  const { profile } = useAuth()
 
   return (
     <aside className="ios-sidebar hidden w-[220px] flex-col md:flex">
       <div className="flex-1 overflow-auto py-4">
+        {/* 用户卡片 */}
         <div className="px-4 mb-4">
           <div className="ios-card p-3">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold">E</span>
+                <span className="text-white font-bold">
+                  {profile?.display_name?.[0]?.toUpperCase() || 'U'}
+                </span>
               </div>
               <div>
-                <div className="ios-body font-semibold">EngFlow</div>
-                <div className="ios-caption">英语学习助手</div>
+                <div className="ios-body font-semibold">
+                  {profile?.display_name || '用户'}
+                </div>
+                <div className="ios-caption text-muted-foreground">
+                  Lv.{profile?.level || 1}
+                </div>
+              </div>
+            </div>
+            
+            {/* 经验条 */}
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="ios-caption text-muted-foreground">经验值</span>
+                <span className="ios-caption font-medium">
+                  {profile?.experience || 0} / {((profile?.level || 1) * 1000)}
+                </span>
+              </div>
+              <div className="ios-progress">
+                <div 
+                  className="ios-progress-bar" 
+                  style={{ 
+                    width: `${((profile?.experience || 0) % 1000) / 10}%` 
+                  }} 
+                />
               </div>
             </div>
           </div>
         </div>
         
+        {/* 导航菜单 */}
         <nav className="grid items-start px-3 gap-1">
           {sidebarItems.map((item, index) => {
             const Icon = item.icon
