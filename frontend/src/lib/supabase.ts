@@ -11,6 +11,10 @@ export interface Profile {
   email: string
   display_name: string | null
   avatar_url: string | null
+  level: number
+  experience: number
+  total_sessions: number
+  current_streak: number
   created_at: string
 }
 
@@ -27,9 +31,12 @@ export interface TypingSession {
 export interface TypingResult {
   id: string
   session_id: string
-  word: string
-  correct: boolean
-  time_ms: number
+  char_index: number
+  expected_char: string
+  typed_char: string
+  is_correct: boolean
+  time_taken: number
+  created_at: string
 }
 
 export interface Content {
@@ -46,7 +53,9 @@ export interface Achievement {
   name: string
   description: string
   icon: string
-  condition: string
+  requirement_type: string
+  requirement_value: number
+  experience_reward: number
 }
 
 export interface UserAchievement {
