@@ -1,8 +1,27 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import type { DifficultyLevel } from "@/types/content"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+export function getDifficultyLabel(difficulty: DifficultyLevel | string): string {
+  switch (difficulty) {
+    case 'easy': return '简单'
+    case 'medium': return '中等'
+    case 'hard': return '困难'
+    default: return '未知'
+  }
+}
+
+export function getDifficultyColor(difficulty: DifficultyLevel | string): string {
+  switch (difficulty) {
+    case 'easy': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+    case 'medium': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+    case 'hard': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+    default: return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
+  }
 }
 
 export function formatDuration(seconds: number): string {
