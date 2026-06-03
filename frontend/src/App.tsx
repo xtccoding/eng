@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider, useAuth } from './hooks/useAuth'
 import { Header } from './components/common/Header'
 import { Sidebar } from './components/common/Sidebar'
@@ -16,28 +16,9 @@ import { ProgressDashboard } from './pages/ProgressDashboard'
 import { Settings } from './pages/Settings'
 import { NotFound } from './pages/NotFound'
 
-// 受保护的路由组件
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth()
-  
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
-      </div>
-    )
-  }
-  
-  if (!user) {
-    return <Navigate to="/auth" replace />
-  }
-  
-  return <>{children}</>
-}
-
 // 主应用布局
 function AppLayout() {
-  const { user, loading } = useAuth()
+  const { loading } = useAuth()
   
   if (loading) {
     return (
@@ -45,10 +26,6 @@ function AppLayout() {
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
       </div>
     )
-  }
-  
-  if (!user) {
-    return <Auth />
   }
   
   return (
